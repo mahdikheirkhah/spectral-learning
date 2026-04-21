@@ -3,7 +3,7 @@ PROJECT_NAME = spectral-learning
 PORT = 8891
 PYTHON_VERSION = 3.11
 VENV = .venv
-
+REQ_FILE = requirements.txt
 # OS Detection and Path Configuration
 ifeq ($(OS),Windows_NT)
     PYTHON = python
@@ -33,7 +33,7 @@ setup: boilerplate
 	@echo "   $(ACTIVATE_CMD)"
 	@echo "------------------------------------------------"
 	@echo "Step 2: Installing Poetry inside the environment..."
-	$(PIP) install --upgrade pip poetry
+	$(PIP) install --upgrade pip poetry poetry-plugin-export
 	@echo "Step 3: Checking for pyproject.toml..."
 	@if [ ! -f pyproject.toml ]; then \
 		echo "No pyproject.toml found. Initializing Poetry..."; \
@@ -84,6 +84,13 @@ kernel:
 ## run: Launch Jupyter Notebook
 run:
 	$(POETRY) run jupyter notebook --port $(PORT) --no-browser
+
+
+## export: Export poetry dependencies to requirements.txt
+export:
+	@echo "Exporting dependencies to $(REQ_FILE)..."
+	$(POETRY) export -f requirements.txt --output $(REQ_FILE) --without-hashes
+
 
 ## clean: Wipe the local environment
 clean:
