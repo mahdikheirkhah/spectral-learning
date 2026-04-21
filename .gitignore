@@ -1,0 +1,15 @@
+.venv
+.DS_Store
+.ipynb_checkpoints
+__pycache__
+*.pyc
+.vscode
+.idea
+.env
+build/
+dist/
+.pytest_cache/
+*.coverage
+htmlcov/
+*.csv
+*/*.npy

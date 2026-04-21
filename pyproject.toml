@@ -1,0 +1,26 @@
+[project]
+name = "spectral-learning"
+version = "0.1.0"
+description = "Spectral methods for dimensionality reduction (PCA & SVD) from scratch."
+authors = [
+    {name = "mahdikheirkhah",email = "mahdikheirkhah060@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "ipykernel (>=7.2.0,<8.0.0)",
+    "notebook (>=7.5.5,<8.0.0)",
+    "pandas (>=3.0.2,<4.0.0)",
+    "numpy (>=2.4.4,<3.0.0)",
+    "matplotlib (>=3.10.8,<4.0.0)",
+    "scikit-learn (>=1.8.0,<2.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "loguru (>=0.7.3,<0.8.0)",
+    "pytest (>=9.0.3,<10.0.0)",
+    "black (>=26.3.1,<27.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
