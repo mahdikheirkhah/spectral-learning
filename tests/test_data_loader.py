@@ -85,7 +85,7 @@ def test_standardize_before_split(valid_csv):
     """Test state error: trying to standardize without having features (X)."""
     loader = DataLoader(valid_csv)
     loader.load_data()
-    with pytest.raises(ValueError, match="Feature matrix \(X\) is empty"):
+    with pytest.raises(ValueError, match=r"Feature matrix \(X\) is empty"):
         loader.standardize_features()
 
 def test_standardize_non_numeric_data(tmp_path):
