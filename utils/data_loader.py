@@ -113,7 +113,7 @@ class DataLoader:
             logger.info("Applying standardization to features.")
             scaler = StandardScaler()
             self.X = scaler.fit_transform(self.X)
-            
+            logger.info(self.X)
             logger.success("Standardization complete.")
             return self.X
 

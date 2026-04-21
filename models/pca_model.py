@@ -1,6 +1,11 @@
 import numpy as np
 from loguru import logger
 from typing import Optional
+from utils.matrix_operations import (
+    center_data,
+    compute_covariance_matrix,
+    compute_top_eigenvectors,
+)
 
 class PCAModel:
     """Principal Component Analysis from scratch using Eigendecomposition."""
@@ -12,23 +17,25 @@ class PCAModel:
         self.explained_variance: Optional[np.ndarray] = None
 
     def fit(self, X: np.ndarray) -> None:
-        """Finds the principal components of the dataset."""
         try:
             logger.info(f"Fitting PCA for {self.n_components} components.")
-            # 1. Center the data
-            self.mean = np.mean(X, axis=0)
-            x_centered = X - self.mean
+            x_centered, self.mean = center_data(X)
+            cov_matrix = compute_covariance_matrix(x_centered)
+            
+            # Get ALL eigenvalues first
+            all_eigenvalues, all_eigenvectors = np.linalg.eigh(cov_matrix)
+            
+            # Sort them
+            idx = np.argsort(all_eigenvalues)[::-1]
+            sorted_eigenvalues = all_eigenvalues[idx]
+            sorted_eigenvectors = all_eigenvectors[:, idx]
 
-            # 2. Covariance matrix
-            cov_matrix = np.cov(x_centered, rowvar=False)
+            # NEW: Store the total sum of ALL eigenvalues (Total Global Variance)
+            self.total_global_variance = np.sum(sorted_eigenvalues)
 
-            # 3. Eigen-decomposition (eigh is optimized for symmetric matrices)
-            eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
-
-            # 4. Sort by highest eigenvalues
-            idx = np.argsort(eigenvalues)[::-1]
-            self.explained_variance = eigenvalues[idx][:self.n_components]
-            self.components = eigenvectors[:, idx][:, :self.n_components]
+            # Store only the top k components
+            self.explained_variance = sorted_eigenvalues[:self.n_components]
+            self.components = sorted_eigenvectors[:, :self.n_components]
 
             logger.success("PCA fitting successful.")
         except Exception as e:
@@ -36,21 +43,14 @@ class PCAModel:
             raise
 
     def get_explained_variance_ratio(self) -> np.ndarray:
-        """
-        Calculates the percentage of variance explained by each selected component.
-        
-        Returns:
-            np.ndarray: Array of ratios summing toward 1.0.
-        """
         if self.explained_variance is None:
-            raise ValueError("Model must be fitted before calculating variance ratio.")
+            raise ValueError("Model must be fitted.")
         
-        # In PCA, the sum of all eigenvalues equals the total variance of the data
-        total_variance = np.sum(self.explained_variance) 
-        return self.explained_variance / total_variance
+        # Divide the kept variance by the GLOBAL variance
+        return self.explained_variance / self.total_global_variance
     
     def transform(self, X: np.ndarray) -> np.ndarray:
         """Projects data into the principal component space."""
-        if self.components is None:
+        if self.components is None or self.mean is None:
             raise ValueError("Model not fitted.")
         return np.dot(X - self.mean, self.components)
