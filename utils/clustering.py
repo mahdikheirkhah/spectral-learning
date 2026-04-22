@@ -29,6 +29,9 @@ class ClusteringPipeline:
         Silhouette Score: 1.0 is best (well separated), -1.0 is worst.
         """
         try:
+            if len(np.unique(labels)) < 2:
+                logger.warning("Less than 2 clusters found, silhouette score not defined.")
+                return {"silhouette": np.nan, "calinski_harabasz": np.nan}
             scores = {
                 "silhouette": silhouette_score(data, labels),
                 "calinski_harabasz": calinski_harabasz_score(data, labels)

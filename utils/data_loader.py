@@ -38,7 +38,7 @@ class DataLoader:
             if not self.file_path.exists():
                 raise FileNotFoundError(f"File not found: {self.file_path}")
 
-            self.data = pd.read_csv(self.file_path, sep=None, engine="python")
+            self.data = pd.read_csv(self.file_path, sep=';', engine="python")
             logger.success(f"Successfully loaded {len(self.data)} instances.")
             return self.data
 
@@ -111,9 +111,9 @@ class DataLoader:
                 raise ValueError("Feature matrix (X) is empty. Run split_features_target first.")
 
             logger.info("Applying standardization to features.")
-            scaler = StandardScaler()
-            self.X = scaler.fit_transform(self.X)
-            logger.info(self.X)
+            mean = np.mean(self.X, axis=0)
+            std = np.std(self.X, axis=0)
+            self.X = (self.X - mean) / (std + 1e-8)
             logger.success("Standardization complete.")
             return self.X
 
